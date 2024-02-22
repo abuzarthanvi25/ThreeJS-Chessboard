@@ -17,8 +17,9 @@ export class Chessboard {
     placeObjectAtPosition(chessCoord, object3D) {
         const position = this.squarePositions[chessCoord];
         if (position) {
+            console.log(position)
             object3D.position.copy(position);
-            this.model.add(object3D);
+            this.model.add(object3D)
         } else {
             console.error(`Invalid chess coordinate: ${chessCoord}`);
         }
@@ -44,7 +45,7 @@ export class Chessboard {
                 this.model.add(square);
 
                 // Store the position in the squarePositions object
-                this.squarePositions[chessCoord] = new THREE.Vector3(i * squareSize - boardSize / 2 + squareSize / 2, 2, j * squareSize - boardSize / 2 + squareSize / 2);
+                this.squarePositions[chessCoord] = new THREE.Vector3(i * squareSize - boardSize / 2 + squareSize / 2, 1, j * squareSize - boardSize / 2 + squareSize / 2);
             }
         }
 

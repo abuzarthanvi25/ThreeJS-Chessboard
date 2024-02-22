@@ -3,6 +3,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Chessboard } from "./objects/chessboard";
 import UIDebugger from "./debuggers";
 import DebugUI from "./debuggers";
+import { Pawn } from "./objects/pieces/pawn";
+import { Rook } from "./objects/pieces/rook";
 
 let scene, renderer, camera;
 let clock;
@@ -16,13 +18,13 @@ const uiDebugger = new DebugUI();
 
 init()
 
-function init() {
+async function init() {
   
   clock = new THREE.Clock();
   
   scene = new THREE.Scene();
   chessboard = new Chessboard(scene);
-  chessboard.init()
+  await chessboard.init()
   scene.background = new THREE.Color("#615E5E");
   // scene.fog = new THREE.Fog(0xa0a0a0, 10, 50);
 
@@ -96,16 +98,18 @@ function init() {
   onWindowResize();
 }
 
-const g = new THREE.BoxGeometry(2, 2, 2, 2);
-const m = new THREE.MeshStandardMaterial({
-    color: "#C0002C",
-    roughness: 0.3,
-    metalness: 0.4
-});
-const mesh = new THREE.Mesh(g, m)
-
-console.log(chessboard.placeObjectAtPosition)
-chessboard.placeObjectAtPosition('A1', mesh)
+const pawn1 = new Pawn("white");
+const pawn2 = new Pawn("black");
+const rook1 = new Rook("black");
+scene.add(pawn1)
+scene.add(rook1)
+scene.add(pawn2)
+pawn1.scale.set(35,35,35)
+rook1.scale.set(35,35,35)
+pawn2.scale.set(35,35,35)
+chessboard.placeObjectAtPosition("A3", pawn1);
+chessboard.placeObjectAtPosition("A4", pawn2);
+chessboard.placeObjectAtPosition("A1", rook1);
 
 function onWindowResize() {
   //ANCHOR - RESIZE
