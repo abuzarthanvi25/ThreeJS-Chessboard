@@ -62,6 +62,11 @@ export class Chessboard {
     placeObjectAtPosition(chessCoord, object3D) {
         const position = this.squarePositions[chessCoord];
         if (position) {
+            if(object3D.color == 'white'){
+                object3D.rotation.y += Math.PI * 1/2
+            }else{
+                object3D.rotation.y -= Math.PI * 1/2
+            }
             object3D.position.copy(position);
             object3D.scale.set(36, 36, 36)
             this.model.add(object3D)
@@ -152,6 +157,17 @@ export class Chessboard {
         });
     }
 
+    createParticleLight() {
+        const particleLight = new THREE.Mesh(
+            new THREE.SphereGeometry(0.05, 8, 8),
+            new THREE.MeshBasicMaterial({ color: 0xffffff })
+        );
+        
+        particleLight.add(new THREE.PointLight(0xffffff, 0.6));
+        
+        return particleLight;
+    }
+
     async createBorders(boardSize, borderWidth) {
         const borderGeometryX = new THREE.BoxGeometry(boardSize + 2 * borderWidth, borderWidth, borderWidth);
         const borderGeometryZ = new THREE.BoxGeometry(borderWidth, borderWidth, boardSize);
@@ -176,6 +192,22 @@ export class Chessboard {
         const borderZ2 = new THREE.Mesh(borderGeometryZ, borderMaterial);
         borderZ2.position.set(boardSize / 2 + borderWidth / 2, 0, 0);
         this.model.add(borderZ2);
+        
+        const particleLight1 = this.createParticleLight();
+        particleLight1.position.set(-boardSize / 2 - borderWidth / 2, 0, -boardSize / 2 - borderWidth / 2);
+        this.model.add(particleLight1);
+    
+        const particleLight2 = this.createParticleLight();
+        particleLight2.position.set(-boardSize / 2 - borderWidth / 2, 0, boardSize / 2 + borderWidth / 2);
+        this.model.add(particleLight2);
+    
+        const particleLight3 = this.createParticleLight();
+        particleLight3.position.set(boardSize / 2 + borderWidth / 2, 0, -boardSize / 2 - borderWidth / 2);
+        this.model.add(particleLight3);
+    
+        const particleLight4 = this.createParticleLight();
+        particleLight4.position.set(boardSize / 2 + borderWidth / 2, 0, boardSize / 2 + borderWidth / 2);
+        this.model.add(particleLight4);
 
         // Add labels
         const labelsX = "HGFEDCBA";

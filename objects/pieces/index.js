@@ -14,7 +14,6 @@ export class ChessPiece extends THREE.Group {
         this.loadModel(modelURL).then((gltf) => {
             const model = gltf?.scene;
 
-
             model.traverse((o) => {
                 if (!o.isMesh) {
                   return;
@@ -26,14 +25,18 @@ export class ChessPiece extends THREE.Group {
                 o.receiveShadow = true;
           
                 const color = new THREE.Color(
-                    this.color == 'white' ? "#ffffff" : "#000000"
+                    this.color == 'white' ? "#D8A400" : "#6D6D6D"
                 );
           
                 color.convertSRGBToLinear();
-                o.material = new THREE.MeshStandardMaterial({
-                  color,
-                  roughness: 0.1,
-                  metalness: 0.6
+                o.material = new THREE.MeshPhysicalMaterial({
+                    clearcoat: 1.5,
+                    clearcoatRoughness: 0.7,
+                    metalness: 0.7,
+                    roughness: 0.25,
+                    color: color,
+                    emissive: "#202020",
+                    emissiveIntensity: 0.5
                 });
               });
 

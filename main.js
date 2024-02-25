@@ -26,11 +26,14 @@ async function init() {
   chessboard = new Chessboard(scene);
   await chessboard.init()
   scene.background = new THREE.Color("#615E5E");
-  // scene.fog = new THREE.Fog(0xa0a0a0, 10, 50);
+  // scene.fog = new THREE.Fog(0xa0a0a0, 10, 100);
 
-  const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff,1.4);
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff,1);
   hemiLight.position.set(0, 10, 0);
   scene.add(hemiLight);
+
+  const ambiantLight = new THREE.AmbientLight(0xffffff, 0.5);
+  scene.add(ambiantLight)
 
   const dirLight = new THREE.DirectionalLight(0xffffff, 1);
   dirLight.castShadow = true;
