@@ -2,6 +2,12 @@ import * as THREE from "three";
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import DebugUI from "../../debuggers";
+import { Pawn } from '../pieces/pawn';
+import { Rook } from '../pieces/rook';
+import { Bishop } from '../pieces/bishop';
+import { King } from '../pieces/king';
+import { Queen } from '../pieces/queen';
+import { Knight } from '../pieces/knight';
 
 export class Chessboard {
     constructor(scene) {
@@ -10,26 +16,13 @@ export class Chessboard {
         this.model = new THREE.Group();
     }
 
-    getSquarePosition(chessboardCoord) {
-        return this.squarePositions[chessboardCoord];
-    }
-    
-    placeObjectAtPosition(chessCoord, object3D) {
-        const position = this.squarePositions[chessCoord];
-        if (position) {
-            console.log(position)
-            object3D.position.copy(position);
-            this.model.add(object3D)
-        } else {
-            console.error(`Invalid chess coordinate: ${chessCoord}`);
-        }
-    }
-
-    async init() {
+    createBoard(){
+        
         const squareSize = 2; // Size of each square
         const numSquares = 8; // Number of squares per side
         const boardSize = squareSize * numSquares; // Total size of the board
         const borderWidth = 1.8; // Thickness of the border
+        const fileLetters = "ABCDEFGH"; // File letters for chess coordinates
 
         for (let i = 0; i < numSquares; i++) {
             for (let j = 0; j < numSquares; j++) {
@@ -40,19 +33,104 @@ export class Chessboard {
                     metalness: 0.4
                 });
                 const square = new THREE.Mesh(squareGeometry, squareMaterial);
-                const chessCoord = String.fromCharCode(65 + i) + (numSquares - j); // Convert indices to chess notation
                 square.position.set(i * squareSize - boardSize / 2 + squareSize / 2, 0, j * squareSize - boardSize / 2 + squareSize / 2);
-                this.model.add(square);
-
-                // Store the position in the squarePositions object
-                this.squarePositions[chessCoord] = new THREE.Vector3(i * squareSize - boardSize / 2 + squareSize / 2, 1, j * squareSize - boardSize / 2 + squareSize / 2);
+                this.model.add(square);                
             }
         }
 
+
+    // Set pieces
+        this.model.children.forEach((square, index) => {
+            const rowIndex = Math.floor(index / numSquares);
+            const colIndex = index % numSquares;
+            const chessCoord = fileLetters[colIndex] + (rowIndex + 1);
+            
+            // Store the position in the squarePositions object
+            this.squarePositions[chessCoord] = new THREE.Vector3(square.position.x, 1 + square.position.y,square.position.z);
+        });
+        
         // Create the border
         this.createBorders(boardSize, borderWidth);
-
+        
         return this.model;
+    }
+    
+    getSquarePosition(chessboardCoord) {
+        return this.squarePositions[chessboardCoord];
+    }
+    
+    placeObjectAtPosition(chessCoord, object3D) {
+        const position = this.squarePositions[chessCoord];
+        if (position) {
+            object3D.position.copy(position);
+            object3D.scale.set(36, 36, 36)
+            this.model.add(object3D)
+        } else {
+            console.error(`Invalid chess coordinate: ${chessCoord}`);
+        }
+    }
+
+    movePiece(fromChessCoord, toChessCoord) {
+        const fromPosition = this.squarePositions[fromChessCoord];
+        const toPosition = this.squarePositions[toChessCoord];
+        
+        if (!fromPosition || !toPosition) {
+            console.error("Invalid chess coordinates provided.");
+            return;
+        }
+        
+        // Find the piece at the 'from' position
+        const pieceToRemove = this.model.children.find(square => square.position.equals(fromPosition));
+        if (!pieceToRemove) {
+            console.error("No piece found at the specified 'from' position.");
+            return;
+        }
+
+        // Remove any existing piece at the 'to' position
+        const existingPiece = this.model.children.find(square => square.position.equals(toPosition));
+        if (existingPiece) {
+            this.model.remove(existingPiece);
+        }
+
+        // Move the piece to the 'to' position
+        pieceToRemove.position.copy(toPosition);
+    }
+
+    async initPieces() {
+        // White pieces
+        this.placeObjectAtPosition('A1', new Rook('white',  this.squarePositions['A1']));
+        this.placeObjectAtPosition('B1', new Knight('white',  this.squarePositions['B1']));
+        this.placeObjectAtPosition('C1', new Bishop('white',  this.squarePositions['C1']));
+        this.placeObjectAtPosition('D1', new Queen('white',  this.squarePositions['D1']));
+        this.placeObjectAtPosition('E1', new King('white',  this.squarePositions['E1']));
+        this.placeObjectAtPosition('F1', new Bishop('white',  this.squarePositions['F1']));
+        this.placeObjectAtPosition('G1', new Knight('white',  this.squarePositions['G1']));
+        this.placeObjectAtPosition('H1', new Rook('white',  this.squarePositions['H1']));
+    
+        for (let i = 0; i < 8; i++) {
+            const coordinate = String.fromCharCode(65 + i) + '2'
+            this.placeObjectAtPosition(coordinate, new Pawn('white',this.squarePositions[coordinate]));
+        }
+    
+        // Black pieces
+        this.placeObjectAtPosition('A8', new Rook('black', this.squarePositions['A8']));
+        this.placeObjectAtPosition('B8', new Knight('black', this.squarePositions['B8']));
+        this.placeObjectAtPosition('C8', new Bishop('black', this.squarePositions['C8']));
+        this.placeObjectAtPosition('D8', new Queen('black', this.squarePositions['D8']));
+        this.placeObjectAtPosition('E8', new King('black', this.squarePositions['E8']));
+        this.placeObjectAtPosition('F8', new Bishop('black', this.squarePositions['F8']));
+        this.placeObjectAtPosition('G8', new Knight('black', this.squarePositions['G8']));
+        this.placeObjectAtPosition('H8', new Rook('black', this.squarePositions['H8']));
+    
+        for (let i = 0; i < 8; i++) {
+            const coordinate = String.fromCharCode(65 + i) + '7'
+            this.placeObjectAtPosition(coordinate, new Pawn('black', this.squarePositions[coordinate]));
+        }
+    }
+    
+    async init() {
+        this.createBoard();
+        this.initPieces();
     }
 
     async createTextGeometry(text, size = 0.5) {

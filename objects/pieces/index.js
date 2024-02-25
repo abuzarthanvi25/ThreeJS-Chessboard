@@ -10,35 +10,12 @@ export class ChessPiece extends THREE.Group {
         this.init(modelURL);
     }
 
-    fun(){
-        model.scene.traverse((o) => {
-            if (!o.isMesh) {
-              return;
-            }
-      
-            o.userData.lastParent = this;
-      
-            o.castShadow = true;
-            o.receiveShadow = true;
-      
-            const color = new THREE.Color(
-              "#ffd363"
-            );
-      
-            color.convertSRGBToLinear();
-            o.material = new THREE.MeshPhongMaterial({
-              color,
-            });
-          });
-    }
-
     init(modelURL){
         this.loadModel(modelURL).then((gltf) => {
             const model = gltf?.scene;
 
 
             model.traverse((o) => {
-                console.log(o)
                 if (!o.isMesh) {
                   return;
                 }
@@ -82,10 +59,6 @@ export class ChessPiece extends THREE.Group {
             );
         })
 
-    }
-
-    setPosition(x, y, z) {
-        this.position.set(x, y, z);
     }
 
     setColor(color) {

@@ -1,9 +1,9 @@
 import { ChessPiece } from ".";
 
-export class Rook extends ChessPiece {
+export class Queen extends ChessPiece {
     constructor(color, initialPosition) {
-        const modelURL = "/models/Rook/Rook.glb"; // URL to the Rook 3D model;
-        const name = 'Rook';
+        const modelURL = "/models/Queen/Queen.glb"; // URL to the Queen 3D model;
+        const name = 'Queen';
         super(modelURL, color, name);
 
         this.initialPosition = initialPosition;

@@ -98,19 +98,6 @@ async function init() {
   onWindowResize();
 }
 
-const pawn1 = new Pawn("white");
-const pawn2 = new Pawn("black");
-const rook1 = new Rook("black");
-scene.add(pawn1)
-scene.add(rook1)
-scene.add(pawn2)
-pawn1.scale.set(35,35,35)
-rook1.scale.set(35,35,35)
-pawn2.scale.set(35,35,35)
-chessboard.placeObjectAtPosition("A3", pawn1);
-chessboard.placeObjectAtPosition("A4", pawn2);
-chessboard.placeObjectAtPosition("A1", rook1);
-
 function onWindowResize() {
   //ANCHOR - RESIZE
   window.addEventListener("resize", () => {
