@@ -138,7 +138,7 @@ export class Chessboard {
         this.initPieces();
     }
 
-    async createTextGeometry(text, size = 0.5) {
+    async createTextGeometry(text, size = 0.35) {
         return new Promise((resolve, reject) => {
             const loader = new FontLoader();
 

@@ -3,8 +3,6 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Chessboard } from "./objects/chessboard";
 import UIDebugger from "./debuggers";
 import DebugUI from "./debuggers";
-import { Pawn } from "./objects/pieces/pawn";
-import { Rook } from "./objects/pieces/rook";
 
 let scene, renderer, camera;
 let clock;
@@ -28,12 +26,20 @@ async function init() {
   scene.background = new THREE.Color("#615E5E");
   // scene.fog = new THREE.Fog(0xa0a0a0, 10, 100);
 
-  const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff,1);
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.8);
   hemiLight.position.set(0, 10, 0);
   scene.add(hemiLight);
 
   const ambiantLight = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambiantLight)
+
+  let urls = [
+    'assets/swedish-royal-castle/posx.jpg', 'assets/swedish-royal-castle/negx.jpg',
+    'assets/swedish-royal-castle/posy.jpg', 'assets/swedish-royal-castle/negy.jpg',
+    'assets/swedish-royal-castle/posz.jpg', 'assets/swedish-royal-castle/negz.jpg',
+  ];
+  let loader = new THREE.CubeTextureLoader();
+  scene.background = loader.load(urls);
 
   const dirLight = new THREE.DirectionalLight(0xffffff, 1);
   dirLight.castShadow = true;
@@ -51,9 +57,12 @@ async function init() {
   // ground
 
   const textureLoader = new THREE.TextureLoader();
+  const radius = 15; // Adjust according to your needs
+  const segments = 32; // Adjust according to your needs
 
   // Load the base color texture (the main texture for color)
-  const baseColorTexture = textureLoader.load('marble2_texture/WM_Marble-125_1024.png');
+  const baseColorTexture = textureLoader.load('marble_texture/Marble016.png');
+  const colorTexture = textureLoader.load('marble_texture/Marble016_1K-JPG_Color.jpg');
   
   // Load the other textures (displacement, normal, roughness)
   const displacementTexture = textureLoader.load('marble_texture/Marble016_1K-JPG_Displacement');
@@ -66,11 +75,15 @@ async function init() {
     displacementMap: displacementTexture, // Displacement map
     normalMap: normalTexture, // Normal map
     roughnessMap: roughnessTexture, // Roughness map
-    roughness: 0.6,
-    metalness: 0.6
+    roughness: 0.3,
+    metalness: 0.8,
+    color: colorTexture,
+    envMap: colorTexture
   });
 
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), material);
+  const geometry = new THREE.CircleGeometry(radius, segments);
+
+  const mesh = new THREE.Mesh(geometry, material);
   mesh.rotation.x = - Math.PI / 2;
   mesh.receiveShadow = true;
   scene.add(mesh);
